@@ -24,7 +24,7 @@ http.interceptors.request.use((config) => {
 http.interceptors.response.use(
   (res) => res,
   (error) => {
-    // Puede devolver un error de un JSON, de un mensaje o no especificado. Para cada caso se devuelve un mensaje
+    // Puede devolver un error de un JSON, de un mensaje o no especificado. Para cada caso, se devuelve un mensaje
     const message = error?.response?.data?.message || error?.message || 'Error de red'
     return Promise.reject(new Error(message))
   }
