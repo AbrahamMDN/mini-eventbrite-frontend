@@ -23,6 +23,11 @@ export default function Navbar(){
             <Link to="/events/new" className="btn btn-primary">Crear evento</Link>
           )}
 
+          {/* Botón para redirección a formulario para escanear QRs si se es organizador, admin o staff */}
+          {isAuthenticated() && hasRole('organizer', 'staff','admin') && (
+            <Link to="/scan" className="btn btn-primary">Escanear</Link>
+          )}
+
           {/* Si el usuario está autenticado, se muestra su nombre o correo y la opción de cerrar sesión. Si no lo está, se muestran enlaces a inicio de sesión y registro */}
 
           {isAuthenticated() ? (
