@@ -15,6 +15,13 @@ export default function Navbar(){
         </Link>
 
         <nav className="flex items-center gap-3">
+          {/* Botón para ver listado de eventos */}
+          <Link to='/events' className='btn'>Eventos</Link>
+
+          {/* Botón para redirección a formulario para crear eventos si se es organizador o admin */}
+          {isAuthenticated() && hasRole('organizer', 'admin') && (
+            <Link to="/events/new" className="btn btn-primary">Crear evento</Link>
+          )}
 
           {/* Si el usuario está autenticado, se muestra su nombre o correo y la opción de cerrar sesión. Si no lo está, se muestran enlaces a inicio de sesión y registro */}
 
