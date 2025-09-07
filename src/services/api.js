@@ -41,8 +41,10 @@ export async function createEvent(payload) {
 }
 
 // Función que simula la compra de un ticket de un evento
-export async function purchaseTicket({eventId, set}) {
-    const { data } = await http.post('/tickets/purchase',{eventId, set})
+export async function purchaseTicket({eventId, seat}) {
+    const { data } = await http.post('/tickets/purchase',{eventId, seat})
+    console.log(data)
+
     return data
 }
 
