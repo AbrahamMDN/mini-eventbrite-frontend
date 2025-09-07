@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Events from './pages/Events'
 import CreateEvent from './pages/CreateEvent'
 import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -38,6 +39,7 @@ export default function App() {
               <Routes>
                 <Route path='/' element={<Login/>} />
                 <Route path='/register' element={<Register/>} />
+                <Route path='/events' element={<Events/>} />
                 <Route
                  path='/events/new' 
                  element={ 
