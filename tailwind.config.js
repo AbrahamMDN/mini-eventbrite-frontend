@@ -7,13 +7,13 @@ export default {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#b21e35',
-          light: '#da1e37',
-          dark: '#641220'
+          DEFAULT: '#0582ca',
+          light: '#00a8e8',
+          dark: '#007ea7'
         },
         bg: {
           light: '#ffffff',
-          dark: '#0b1220'
+          dark: '#00171f'
         },
         text: {
           light: '#0f172a',
