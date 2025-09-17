@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Card from '../components/Card'
 import { scanTicket } from '../services/api'
-import { decodeQrFromImageFile } from '../utils/qrDecode'
+import { decodeQrFromImageFile, startQrScanner, stopQrScanner } from '../utils/qrDecode'
 
 // Función que maneja el scaneo de un QR desde el FrontEnd
 export default function Scan() {
@@ -13,19 +13,34 @@ export default function Scan() {
   const [error, setError] = useState(null)
   const [result, setResult] = useState(null)
   const [hint, setHint] = useState(null)
+  const [scanning, setScanning] = useState(false)
+
+  // Referencia para el video 
+  const videoRef = useRef(null)
 
   // Subfunción asíncrona que maneja la lectura del QR como imagen 
   const handleImage = async (file) => {
     // Carga del archivo
     if (!file) return
     setImgName(file.name)
-    setError(null); setHint(null); setResult(null)
+    resetAll()
     // Decodificación del QR
     try {
       const data = await decodeQrFromImageFile(file)
-      if (!data) { setError('No se pudo leer un QR válido en la imagen.'); return }
+      // Se utiliza la subfunción para manejo del contenido del QR
+      handleQrContent(data)
+    } catch (e) {
+      setError(e.message || 'Error en lectura de la imagen.');
+    }
+  }
 
-      // Parseo de infromación recuperada, actualización de estadps y manejo de errores de lectura de parámetros
+  // Subfunción que maneja el contenido decodificado del QR desde una imagen o desde la cámara
+  const handleQrContent = (data) => {
+    if (!data) {
+      setError('No se pudo leer un QR válido.')
+      return
+    }
+      // Parseo de infromación recuperada, actualización de estados y manejo de errores de lectura de parámetros
       try {
         const parsed = JSON.parse(data)
         if (parsed?.t && parsed?.s) {
@@ -42,10 +57,7 @@ export default function Scan() {
       } else {
         setError('Contenido del QR no reconocido. Esperaba {"t","s"} o un ObjectId.')
       }
-    } catch (e) {
-      setError(e.message || 'Error leyendo la imagen.')
-    }
-  }
+  } 
 
   // Subfunción asíncrona que envía la información recuperada a la función de escaneo en la API, con manejo de errores
   const onSubmit = async (e) => {
@@ -67,10 +79,56 @@ export default function Scan() {
     }
   }
 
+  // Subfunción asincrónica que inicia el escaneo del QR a través de la cámara
+  const iniciarCamara = async () => {
+    resetAll()
+    setScanning(true)
+    try {
+      await startQrScanner(videoRef.current, (data) => {
+        setScanning(false)
+        handleQrContent(data)
+      })
+    } catch (err) {
+      setScanning(false)
+      setError('No se pudo acceder a la cámara.')
+    }
+  }
+
+  // Subfunción que detiene la cámara para escaneo de QR
+  const detenerCamara = () => {
+    stopQrScanner(videoRef.current)
+    setScanning(false)
+  }
+
+  // Subfunción que reinicia los estados a su formato inicial
+  const resetAll = () => {
+    setTokenJson('')
+    setTicketId('')
+    setHint(null)
+    setError(null)
+    setResult(null)
+  }
+
   return (
     <div className="max-w-2xl mx-auto">
       <Card>
         <h1 className="text-2xl font-semibold mb-4">Escanear / Check-in</h1>
+
+        {/* Escaneo desde cámara */}
+        <div className="mb-6">
+          <label className="label">Escaneo desde la cámara</label>
+          {!scanning ? (
+            <button className="btn btn-secondary" onClick={iniciarCamara}>
+              Iniciar cámara
+            </button>
+          ) : (
+            <button className="btn btn-danger" onClick={detenerCamara}>
+              Detener cámara
+            </button>
+          )}
+          <video ref={videoRef} className="mt-4 w-full max-w-sm rounded shadow" />
+        </div>
+
         <form onSubmit={onSubmit} className="space-y-6">
           <div>
             {/* Campo para subir imagen del QR */}
