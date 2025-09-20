@@ -24,9 +24,16 @@ http.interceptors.request.use((config) => {
 http.interceptors.response.use(
   (res) => res,
   (error) => {
-    // Puede devolver un error de un JSON, de un mensaje o no especificado. Para cada caso, se devuelve un mensaje
-    const message = error?.response?.data?.message || error?.message || 'Error de red'
-    return Promise.reject(new Error(message))
+    // Extracción de datos relevantes del error de forma individual
+    const res = error?.response
+    const errData = res?.data?.error || {}
+    const fallbackMessage = error?.message || 'Error de red' // Opción para mensaje alternativo
+
+    // Creación de nuevo error con código y detalles del backend
+    const err = new Error(errData.message || fallbackMessage)
+    err.code = errData.code || res?.status || 'UNKNOWN'
+    err.details = errData.details || null
+    return Promise.reject(err)
   }
 )
 

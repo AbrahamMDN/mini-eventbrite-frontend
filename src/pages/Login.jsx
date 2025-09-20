@@ -25,7 +25,15 @@ export default function Login() {
     e.preventDefault()
     setLoading(true); setError(null)
     try { await login({ email, password }); navigate(from, { replace: true }) }
-    catch (err) { setError(err?.message || 'No se pudo iniciar sesión.') }
+    catch (err) {
+
+      // Manejo específico de errores personalizados por su code o message [Propiedad de AppError]
+      if (err.code === 'INVALID_CREDENTIALS') {
+        setError('Correo o contraseña incorrectos')
+      } else if (err.code === 'UNAUTHORIZED') {
+        setError('No autorizado. Por favor intenta nuevamente.')
+      } else {
+        setError(err.message || 'No se pudo iniciar sesión.') }}
     finally { setLoading(false) }
   }
 
