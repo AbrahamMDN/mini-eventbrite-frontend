@@ -25,8 +25,9 @@ export default function CreateEvent() {
         if (name.startsWith('seatMap.')) {
         const key = name.split('.')[1]
         setForm((f) => ({ ...f, seatMap: { ...f.seatMap, [key]: key === 'type' ? value : Number(value) } }))
+        // Aplica para otros parámetros del formulario que no sean el asiento 
         } else {
-        setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }))
+        setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : (name === 'price' ? Number(value) : value) }))
         }
     }
 
